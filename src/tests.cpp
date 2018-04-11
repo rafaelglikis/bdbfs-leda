@@ -1,12 +1,7 @@
 #include "../incl/tests.h"
-#define INFO 1
 
 bool testTinyGraph()
 {    
-    #ifdef INFO
-        std::cout << "[i] Testing tiny graph." << std::endl; 
-    #endif
-
     // Creating graph
     leda::graph G; 
 
@@ -38,38 +33,133 @@ bool testTinyGraph()
     G.new_edge(n8,n9);
     G.new_edge(n10,n5);
     
-    test(G, n1, n9);   
+    test(G, n1, n9, "tiny graph");   
 }
 
-// http://graphics.stanford.edu/courses/cs368-00-spring/TA/manuals/LEDA/graph_gen.html
+bool testTinyGraph2()
+{    
+    // Creating graph
+    leda::graph G; 
+
+    // Creating nodes
+    leda::node n0=G.new_node();
+    leda::node n1=G.new_node();
+    leda::node n2=G.new_node();
+    leda::node n3=G.new_node();
+    leda::node n4=G.new_node();
+    leda::node n5=G.new_node();
+    leda::node n6=G.new_node();
+    leda::node n7=G.new_node();
+    leda::node n8=G.new_node();
+    leda::node n9=G.new_node();
+    leda::node n10=G.new_node();
+
+    // Creating edges
+    G.new_edge(n1,n8);
+    G.new_edge(n3,n9);
+    G.new_edge(n4,n9);
+    G.new_edge(n6,n1);
+    G.new_edge(n7,n4);
+    G.new_edge(n8,n3);
+    G.new_edge(n8,n7);
+    G.new_edge(n8,n5);
+    
+    test(G, n6, n9, "complex path test");   
+}
+
+bool testTinyOddGraph()
+{    
+    // Creating graph
+    leda::graph G; 
+
+    // Creating nodes
+    leda::node n0=G.new_node();
+    leda::node n1=G.new_node();
+    leda::node n2=G.new_node();
+    leda::node n3=G.new_node();
+    leda::node n4=G.new_node();
+    leda::node n5=G.new_node();
+    leda::node n6=G.new_node();
+    leda::node n7=G.new_node();
+    leda::node n8=G.new_node();
+    leda::node n9=G.new_node();
+    leda::node n10=G.new_node();
+
+    // Creating edges
+    G.new_edge(n1,n8);
+    G.new_edge(n3,n9);
+    G.new_edge(n4,n9);
+    G.new_edge(n6,n1);
+    G.new_edge(n7,n4);
+    G.new_edge(n8,n3);
+    G.new_edge(n8,n7);
+    G.new_edge(n8,n5);
+    
+    G.new_edge(n9,n10);
+    
+    test(G, n6, n10, "Odd Graph");   
+}
+
+bool testNonCoherentGraph()
+{    
+
+    // Creating graph
+    leda::graph G; 
+
+    // Creating nodes
+    leda::node n0=G.new_node();
+    leda::node n1=G.new_node();
+    leda::node n2=G.new_node();
+    leda::node n3=G.new_node();
+    leda::node n4=G.new_node();
+    leda::node n5=G.new_node();
+    leda::node n6=G.new_node();
+    leda::node n7=G.new_node();
+    leda::node n8=G.new_node();
+    leda::node n9=G.new_node();
+    leda::node n10=G.new_node();
+
+    // Creating edges
+    leda::edge e = G.new_edge(n1,n0);
+    G.new_edge(n1,n2);
+    G.new_edge(n1,n10);
+    G.new_edge(n2,n3);
+    G.new_edge(n3,n4);
+    G.new_edge(n6,n7);
+    G.new_edge(n7,n8);
+    G.new_edge(n7,n9);
+    G.new_edge(n8,n9);
+    G.new_edge(n10,n5);
+    
+    return test(G, n1, n9, "Non Coherent");   
+}
+
 bool testRandomGraphs()
 {
-    int nodesCount[] = {10, 100, 1000, 10000};
-    //nodesCount[2] = 100000; // NOT ENOUGH MEMORY
+    std::vector<std::pair<int,int>> graphSizes;
 
-    for(short i = 0; i<sizeof(nodesCount)/sizeof(nodesCount[0]); ++i)
+    graphSizes.push_back(std::make_pair(10, 4*10));
+    graphSizes.push_back(std::make_pair(100, 4*100));
+    graphSizes.push_back(std::make_pair(1000, 4*1000));
+    graphSizes.push_back(std::make_pair(1000, 1000*log(1000)));
+    graphSizes.push_back(std::make_pair(10000, 4*10000));
+    graphSizes.push_back(std::make_pair(10000, 10000*log(10000)));
+    graphSizes.push_back(std::make_pair(100000, 4*100000));
+    graphSizes.push_back(std::make_pair(100000, 100000*log(100000))); // NOT ENOUGH MEMORY
+    
+    for(std::vector<std::pair<int,int>>::iterator it = graphSizes.begin(); it!=graphSizes.end(); ++it)
     {
-
-        std::cout << "[i] Testing random graph with " << nodesCount[i] 
-            << " nodes and " << 4*nodesCount[i] <<  " edges." << std::endl; 
-
         leda::graph G;
-        leda::random_graph(G,nodesCount[i], 4*nodesCount[i]); 
+        leda::random_graph(G, it->first, it->second); 
         Make_Connected(G);
         leda::node source = G.choose_node();
         leda::node target = G.choose_node();
-        test(G, source, target);
 
-        if(i==1) break; // NOT ENOUGH MEMORY
 
-        std::cout << "[i] Testing random graph with " << nodesCount[i] 
-            << " nodes and " << round(nodesCount[i]*log(nodesCount[i])) <<  " edges." << std::endl; 
-        leda::graph GG;
-        leda::random_graph(GG,nodesCount[i],round(nodesCount[i]*log(nodesCount[i]))); 
-        Make_Connected(GG);
-        source = GG.choose_node();
-        target = GG.choose_node();
-        test(GG, source, target);
+        std::stringstream infostream;
+        infostream << "Random graph with " << it->first << " nodes and " << it->second<<" edges.";
+    
+        test(G, source, target, infostream.str());
     }
 }
 
@@ -80,9 +170,8 @@ bool testGridGraphs()
     
     for(short i = 0; i<sizeof(width)/sizeof(width[0]); ++i)
     {
-
         std::cout << "[i] Testing grid graph with " << height 
-            << " nodes and " << width[i] <<  " edges." << std::endl; 
+            << " nodes and " << width[i] <<  " edges" << std::endl; 
 
         leda::graph G;
         leda::node_array<double> xcoord;
@@ -91,13 +180,13 @@ bool testGridGraphs()
 
         leda::node source = G.choose_node();
         leda::node target = G.choose_node();
-        test(G, source, target);
+        test(G, source, target, "grapse kati dame");
     }
 }
 
-bool test(leda::graph& G, leda::node& source, leda::node& target)
+bool test(leda::graph& G, leda::node& source, leda::node& target, std::string info)
 {
-    std::list<leda::edge> path = ledaShortestPathBFS(G, source, target);
+    std::list<leda::edge> path = shortestPathBFS(G, source, target);
     std::list<leda::edge> mpath = bdBFS(G, source, target);
 
     std::list<leda::edge>::iterator it1 = path.begin();
@@ -111,6 +200,8 @@ bool test(leda::graph& G, leda::node& source, leda::node& target)
         return false;
     }
 
+    /*
+    // some paths are equivalent
     while( it1 != path.end() && it2 != mpath.end()) {
         if(*it1 != *it2) {
             std::cout << "[-] Test failed: " << std::endl;
@@ -126,7 +217,24 @@ bool test(leda::graph& G, leda::node& source, leda::node& target)
         it1++;
         it2++;    
     }
+    */
 
-    std::cout << "[+] Test Pass!" << std::endl;
+    #ifdef DEBUG
+    leda::edge e;
+    forall_edges(e,G) {           //iterate over all edges e of G
+        leda::node source=G.source(e);  //compute source of e
+        leda::node target=G.target(e);  //compute target of e
+
+        std::cout << "edge "; 
+        G.print_edge(e);          //print edge
+        std::cout << " has source ";  
+        G.print_node(source);     //print source
+        std::cout << " and target ";
+        G.print_node(target);     //print target
+        std::cout << std::endl;
+    }
+    #endif
+
+    std::cout << "[+] Test OK! (" << info << ")" << std::endl;
     return true;
 }

@@ -11,7 +11,10 @@ int main(int argc, char** argv)
     std::string command = argv[1];
 
     if (!command.compare("tests")){
+        testNonCoherentGraph();
         testTinyGraph();
+        testTinyGraph2();
+        testTinyOddGraph();
         testRandomGraphs();
         //testGridGraphs();
     }

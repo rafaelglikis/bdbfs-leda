@@ -1,7 +1,6 @@
 #include "../incl/bfs.h"
-#define INFO 1
 
-std::list<leda::edge> ledaShortestPathBFS(leda::graph &G, leda::node &source, leda::node &target) 
+std::list<leda::edge> shortestPathBFS(leda::graph &G, leda::node &source, leda::node &target) 
 {
     // Running BFS
     leda::node_array<int> dist(G,-1); // The distance from source to nodes v in G
@@ -10,126 +9,221 @@ std::list<leda::edge> ledaShortestPathBFS(leda::graph &G, leda::node &source, le
     
     leda::node v;
     #ifdef INFO
-        std::cout << "-----------------------------------------" << std::endl;
-        std::cout << "|\t L E D A  B F S \t\t|" << std::endl;
-        std::cout << "-----------------------------------------" << std::endl;
-        std::cout << "|node\t" << "|    distance\t" << "| shortest-path |" << std::endl;
-        forall_nodes(v,G) {
-            std::cout << "| ";
-            G.print_node(v);
-            std::cout << "\t|\t" << dist[v] << "\t| ";
-            if (pred[v]!=nil) G.print_edge(pred[v]);
-            else std::cout << "\t";
-            std::cout << "\t|" << std::endl;
-        }
-        std::cout << "-----------------------------------------" << std::endl;
-    #endif
-
-    // Finding Shortest Path
-    std::list<leda::edge> path; // Contains every edge of shortest path from source to target
-    leda::node checkpoint = target;
-    while (checkpoint != source) {
-        forall_rev_nodes(v,G) {
-            if (pred[v]!=nil && G.target(pred[v]) == checkpoint) {   
-                checkpoint = G.source(pred[v]);
-                path.push_front(pred[v]);
-            }
-        }
+    std::cout << "Source: ";
+    G.print_node(source);
+    std::cout << std::endl << "Target: ";
+    G.print_node(target);
+    std::cout << std::endl;
+    std::cout << "-----------------------------------------" << std::endl;
+    std::cout << "|\t L E D A  B F S \t\t|" << std::endl;
+    std::cout << "-----------------------------------------" << std::endl;
+    std::cout << "|node\t" << "|    distance\t" << "| shortest-path |" << std::endl;
+    forall_nodes(v,G) {
+        std::cout << "| ";
+        G.print_node(v);
+        std::cout << "\t|\t" << dist[v] << "\t| ";
+        if (pred[v]!=nil) G.print_edge(pred[v]);
+        else std::cout << "\t";
+        std::cout << "\t|" << std::endl;
     }
-
-    #ifdef INFO
-    std::cout << "Shortest path: " << std::endl;
-    for (std::list<leda::edge>::iterator it = path.begin(); it != path.end(); ++it) {
-        G.print_edge(*it);
-        std::cout << std::endl;
-    }   
+    std::cout << "-----------------------------------------" << std::endl;
     #endif
-    return path;
+
+    return shortestPath(G, source, target, pred);
 }
+
+
 
 std::list<leda::edge> bdBFS(leda::graph &G, leda::node &source, leda::node &target) 
 {
     std::deque<leda::node> sourceQ;
     std::deque<leda::node> targetQ;
-    std::unordered_set<leda::node> sourceDiscoveredNodes;
-    std::unordered_set<leda::node> targetDiscoveredNodes;
+    leda::node_array<bool> sourceDiscoveredNodes(G, false);
+    leda::node_array<bool> targetDiscoveredNodes(G, false);
     
-    leda::node_array<leda::edge> pred(G); // Pred contains the edge that was used by BFS to reach v or nil, for every node v of G.
+    leda::node_array<leda::edge> predSource(G); 
+    leda::node_array<leda::edge> predTarget(G); 
     
     leda::node v;
     leda::node t;
 
     sourceQ.push_back(source);
     targetQ.push_back(target);
-    sourceDiscoveredNodes.insert(v);
-    targetDiscoveredNodes.insert(t);
-    
-    leda::edge e;  
-    while (!sourceQ.empty() && !targetQ.empty()) {
-        v = sourceQ.back(); sourceQ.pop_back();
-        t = targetQ.back(); targetQ.pop_back();
+    sourceDiscoveredNodes[source] = true;
+    targetDiscoveredNodes[target] = true;    
 
-        forall_out_edges(e,v) { 
-            if(sourceDiscoveredNodes.insert(G.target(e)).second){
-                sourceQ.push_back(G.target(e));
-                if(pred[G.target(e)]==nil && G.target(e)!=G.source(e)) pred[G.target(e)] = e; 
+    leda::node middleNode = nil;
+
+
+    std::list<leda::edge> path; // Contains every edge of shortest path from source to target
+    if(target == source) {
+        return path;
+    } else if(targetDiscoveredNodes[source]) {
+        middleNode = source;
+    } else if(sourceDiscoveredNodes[target]) {
+        middleNode = target;
+    }
+
+    leda::edge e;
+    while (!sourceQ.empty() && !targetQ.empty() && middleNode==nil) {
+        std::deque<leda::node> *tmpQ = new std::deque<leda::node>(sourceQ);
+        sourceQ.clear();
+        while (!tmpQ->empty()) {
+            v = tmpQ->back(); 
+            tmpQ->pop_back();
+            forall_out_edges(e,v) { 
+                if(!sourceDiscoveredNodes[G.target(e)]) {
+                    #ifdef INFO
+                    std::cout << "S: ";
+                    G.print_edge(e);
+                    std::cout<<std::endl;
+                    #endif
+                    sourceDiscoveredNodes[G.target(e)] = true;
+                    sourceQ.push_back(G.target(e));
+                    if(predSource[G.target(e)]==nil && G.target(e)!=G.source(e)) {
+                        predSource[G.target(e)] = e; 
+                    } 
+                }
+                if(targetDiscoveredNodes[G.target(e)]) {
+                    middleNode = G.target(e);
+                    goto endloop;
+                }
             }
-            if(targetDiscoveredNodes.find(G.target(e)) != targetDiscoveredNodes.end()) goto endloop;
         }
-        
-        forall_in_edges(e,t) { 
-            if(targetDiscoveredNodes.insert(G.source(e)).second) {
-                targetQ.push_back(G.source(e));
-                if(pred[G.target(e)]==nil && G.target(e)!=G.source(e)) pred[G.target(e)] = e; 
-            }
-            if(sourceDiscoveredNodes.find(G.source(e)) != targetDiscoveredNodes.end()) goto endloop;
-        }       
+        delete tmpQ;
+        if(middleNode !=nil) break;
+
+        tmpQ = new std::deque<leda::node>(targetQ);
+        targetQ.clear();
+        while (!tmpQ->empty()) {
+            t = tmpQ->back(); tmpQ->pop_back();
+            forall_in_edges(e,t) { 
+                if(!targetDiscoveredNodes[G.source(e)]) {
+                    #ifdef INFO
+                    std::cout << "T: ";
+                    G.print_edge(e);std::cout<<std::endl;
+                    #endif
+                    targetDiscoveredNodes[G.source(e)] = true;
+                    targetQ.push_back(G.source(e));
+                    if(predTarget[G.source(e)]==nil && G.target(e)!=G.source(e)) {
+                        predTarget[G.source(e)] = e;
+                    } 
+                }
+                if(sourceDiscoveredNodes[G.source(e)]) {
+                    middleNode = G.source(e);
+                    goto endloop;
+                }
+            }  
+        }
+        delete tmpQ;
     } 
-    
+
     endloop:
 
-    #ifdef INFO
-        std::cout << "Source: ";
-        G.print_node(source);
-        std::cout << std::endl << "Target";
-        G.print_node(target);
-        std::cout << std::endl;
-        std::cout << "-------------------------" << std::endl;
-        std::cout << "|     R A F A B F S     |" << std::endl;
-        std::cout << "-------------------------" << std::endl;
-        std::cout << "|node\t" << "| shortest-path |" << std::endl;
-        forall_nodes(v,G) {
-            std::cout << "| ";
-            G.print_node(v);
-            std::cout << "\t| ";
-            if (pred[v]!=nil) G.print_edge(pred[v]);
-            else std::cout << "\t";
-            std::cout << "\t|" << std::endl;
-        }
-        std::cout << "-------------------------" << std::endl;
-    #endif
-    
-    std::list<leda::edge> path; // Contains every edge of shortest path from source to target
-    
-    leda::node checkpoint = target;
-    while (checkpoint != source) {
-        forall_rev_nodes(v,G) {
-            if (pred[v]!=nil && G.target(pred[v]) == checkpoint) {   
-                checkpoint = G.source(pred[v]); 
-                path.push_front(pred[v]);
-            }
-        }
-        //break;
+    // Finding Shortest Path
+
+    if(middleNode == nil) {
+        std::cout << "[i] Graph not strongly coherent." << std::endl;
+        return path;
     }
 
     #ifdef INFO
-    std::cout << "Shortest path: " << std::endl;
+    //leda::node v;
+    std::cout << " * Source: ";
+    G.print_node(source);
+    std::cout << std::endl << " * Target: ";
+    G.print_node(target);
+    std::cout << std::endl << " * Middle: ";
+    G.print_node(middleNode);
+    std::cout << std::endl;
+    std::cout << "-----------------------------------------" << std::endl;
+    std::cout << "|node\t" << "|   predSource  |   predTarget  |" << std::endl;
+    std::cout << "-----------------------------------------" << std::endl;
+    forall_nodes(v,G) {
+        std::cout << "| ";
+        G.print_node(v);
+        std::cout << "\t| ";
+        if (predSource[v]!=nil) { 
+            G.print_edge(predSource[v]); 
+            std::cout << "\t";
+        } else {
+            std::cout << "\t\t";
+        }
+        std::cout << "| ";
+        if (predTarget[v]!=nil) { 
+            std::cout<< "*";
+            G.print_edge(predTarget[v]);
+        } else {
+            std::cout << "\t";
+        }
+        std::cout << "\t|" << std::endl;
+    }
+    std::cout << "-----------------------------------------" << std::endl;
+    #endif
+
+    leda::node checkpoint = middleNode;
+    while (checkpoint != source) {
+        if (predSource[checkpoint]!=nil) {   
+            path.push_front(predSource[checkpoint]);
+            checkpoint = G.source(predSource[checkpoint]);
+        }
+    }
+    
+    if(middleNode == target) {
+        return path;
+    }
+
+    checkpoint = middleNode;
+    while (checkpoint != target) {
+        if (predTarget[checkpoint]!=nil) {   
+            path.push_back(predTarget[checkpoint]);
+            checkpoint = G.target(predTarget[checkpoint]);
+        }
+    }
+
+    #ifdef INFO
+    std::cout << "Shortest path (bdfs): " << std::endl;
     for (std::list<leda::edge>::iterator it = path.begin(); it != path.end(); ++it) {
         G.print_edge(*it);
         std::cout << std::endl;
     }   
     #endif
-
+    
     return path;
+
 }
 
+
+std::list<leda::edge> shortestPath(leda::graph &G, leda::node &source, leda::node &target, leda::node_array<leda::edge> &pred)
+{
+    // Finding Shortest Path
+    bool stop = true;
+    leda::node v;
+    std::list<leda::edge> path; // Contains every edge of shortest path from source to target
+    leda::node checkpoint = target;
+    while (checkpoint != source) {
+        stop = true;
+        forall_rev_nodes(v,G) {
+            if (pred[v]!=nil && G.target(pred[v]) == checkpoint) {   
+                checkpoint = G.source(pred[v]);
+                path.push_front(pred[v]);
+                stop=false;
+            }
+        }
+        if (stop) {
+            std::cout << "[i] Graph not strongly coherent." << std::endl;
+            std::list<leda::edge> empty_path;
+            return  empty_path;
+        }
+    }
+
+    #ifdef INFO
+    std::cout << "Shortest path (bfs): " << std::endl;
+    for (std::list<leda::edge>::iterator it = path.begin(); it != path.end(); ++it) {
+        G.print_edge(*it);
+        std::cout << std::endl;
+    }   
+    #endif
+    
+    return path;
+}
