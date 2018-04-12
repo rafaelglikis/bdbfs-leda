@@ -201,19 +201,17 @@ std::list<leda::edge> shortestPath(leda::graph &G, leda::node &source, leda::nod
     leda::node v;
     std::list<leda::edge> path; // Contains every edge of shortest path from source to target
     leda::node checkpoint = target;
+
+    
+    if (pred[target]==nil) {
+        std::cout << "[i] Graph not strongly coherent." << std::endl;
+        return path;
+    }
+    
     while (checkpoint != source) {
-        stop = true;
-        forall_rev_nodes(v,G) {
-            if (pred[v]!=nil && G.target(pred[v]) == checkpoint) {   
-                checkpoint = G.source(pred[v]);
-                path.push_front(pred[v]);
-                stop=false;
-            }
-        }
-        if (stop) {
-            std::cout << "[i] Graph not strongly coherent." << std::endl;
-            std::list<leda::edge> empty_path;
-            return  empty_path;
+        if (pred[checkpoint]!=nil) {   
+            path.push_front(pred[checkpoint]);
+            checkpoint = G.source(pred[checkpoint]);
         }
     }
 

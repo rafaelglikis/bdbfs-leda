@@ -170,9 +170,6 @@ bool testGridGraphs()
     
     for(short i = 0; i<sizeof(width)/sizeof(width[0]); ++i)
     {
-        std::cout << "[i] Testing grid graph with " << height 
-            << " nodes and " << width[i] <<  " edges" << std::endl; 
-
         leda::graph G;
         leda::node_array<double> xcoord;
         leda::node_array<double> ycoord;
@@ -180,14 +177,24 @@ bool testGridGraphs()
 
         leda::node source = G.choose_node();
         leda::node target = G.choose_node();
-        test(G, source, target, "grapse kati dame");
+
+        std::stringstream infostream;
+        infostream << "Grid graph " << height << "x" <<  width[i];
+
+        test(G, source, target, infostream.str());
     }
 }
 
 bool test(leda::graph& G, leda::node& source, leda::node& target, std::string info)
 {
+
+    clock_t begin = clock();
     std::list<leda::edge> path = shortestPathBFS(G, source, target);
+    double elapsed_secs_leda = double(clock() - begin) / CLOCKS_PER_SEC;
+
+    begin = clock();
     std::list<leda::edge> mpath = bdBFS(G, source, target);
+    double elapsed_secs_rafa = double(clock() - begin) / CLOCKS_PER_SEC;
 
     std::list<leda::edge>::iterator it1 = path.begin();
     std::list<leda::edge>::iterator it2 = mpath.begin();
@@ -236,5 +243,8 @@ bool test(leda::graph& G, leda::node& source, leda::node& target, std::string in
     #endif
 
     std::cout << "[+] Test OK! (" << info << ")" << std::endl;
+    std::cout << "    Time elapsed (leda): " << elapsed_secs_leda << " secs" << std::endl;
+    std::cout << "    Time elapsed (rafa): " << elapsed_secs_rafa << " secs" << std::endl;
+
     return true;
 }

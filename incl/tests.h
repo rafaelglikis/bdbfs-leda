@@ -4,6 +4,7 @@
 #include "../incl/bfs.h"
 #include <vector>
 #include <utility>
+#include <ctime>
 
 bool testTinyGraph();
 bool testTinyGraph2();

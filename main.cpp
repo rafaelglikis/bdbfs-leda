@@ -16,7 +16,7 @@ int main(int argc, char** argv)
         testTinyGraph2();
         testTinyOddGraph();
         testRandomGraphs();
-        //testGridGraphs();
+        testGridGraphs();
     }
 
     return 0;
