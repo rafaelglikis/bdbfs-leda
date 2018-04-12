@@ -66,9 +66,10 @@ std::list<leda::edge> bdBFS(leda::graph &G, leda::node &source, leda::node &targ
 
     leda::edge e;
     while (!sourceQ.empty() && !targetQ.empty() && middleNode==nil) {
+        // BFS step from the start node
         std::deque<leda::node> *tmpQ = new std::deque<leda::node>(sourceQ);
         sourceQ.clear();
-        while (!tmpQ->empty()) {
+        while (!tmpQ->empty() && middleNode==nil) {
             v = tmpQ->back(); 
             tmpQ->pop_back();
             forall_out_edges(e,v) { 
@@ -86,16 +87,18 @@ std::list<leda::edge> bdBFS(leda::graph &G, leda::node &source, leda::node &targ
                 }
                 if(targetDiscoveredNodes[G.target(e)]) {
                     middleNode = G.target(e);
-                    goto endloop;
+                    break;
                 }
             }
         }
         delete tmpQ;
+
         if(middleNode !=nil) break;
 
+        // BFS step from the finish node
         tmpQ = new std::deque<leda::node>(targetQ);
         targetQ.clear();
-        while (!tmpQ->empty()) {
+        while (!tmpQ->empty() && middleNode==nil) {
             t = tmpQ->back(); tmpQ->pop_back();
             forall_in_edges(e,t) { 
                 if(!targetDiscoveredNodes[G.source(e)]) {
@@ -111,17 +114,14 @@ std::list<leda::edge> bdBFS(leda::graph &G, leda::node &source, leda::node &targ
                 }
                 if(sourceDiscoveredNodes[G.source(e)]) {
                     middleNode = G.source(e);
-                    goto endloop;
+                    break;
                 }
             }  
         }
         delete tmpQ;
     } 
 
-    endloop:
-
     // Finding Shortest Path
-
     if(middleNode == nil) {
         std::cout << "[i] Graph not strongly coherent." << std::endl;
         return path;

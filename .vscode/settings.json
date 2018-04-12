@@ -24,6 +24,10 @@
         "array": "cpp",
         "cmath": "cpp",
         "tuple": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "chrono": "cpp",
+        "ctime": "cpp",
+        "fstream": "cpp",
+        "ratio": "cpp"
     }
 }
