@@ -2,6 +2,7 @@
 #define TESTS_H
 
 #include "../incl/bfs.h"
+#include "../incl/bdbfs.h"
 #include <vector>
 #include <utility>
 

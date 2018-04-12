@@ -7,9 +7,10 @@
 #include <queue>
 #include <unordered_set>
 
-std::list<leda::edge> shortestPathBFS(leda::graph&, leda::node&, leda::node&); 
-std::list<leda::edge> shortestPathbdBFS(leda::graph&, leda::node&, leda::node&);
-std::list<leda::edge> bdBFS(leda::graph &G, leda::node &source, leda::node &target);
-std::list<leda::edge> shortestPath(leda::graph&, leda::node&, leda::node&, leda::node_array<leda::edge>&);
+namespace bfs 
+{
+    std::list<leda::edge> shortestPath(leda::graph&, leda::node&, leda::node&); 
+    void printInfo(leda::graph&, leda::node_array<int>&, leda::node_array<leda::edge>&, leda::node&, leda::node&);
+}
 
 #endif

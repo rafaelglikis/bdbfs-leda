@@ -196,7 +196,10 @@ namespace test
     {
         
         int height = 100;
-        int width[] = {1000, 10000, 10000};
+        int width[2]; 
+        width[0] = 1000;
+        width[1] = 10000;
+        // width[2] = 100000; /// NOT ENOUGH MEMORY
         
         for(short i = 0; i<sizeof(width)/sizeof(width[0]); ++i)
         {
@@ -213,14 +216,30 @@ namespace test
 
     bool test(leda::graph& G, leda::node& source, leda::node& target, std::string info)
     {
-
         clock_t begin = clock();
-        std::list<leda::edge> path = shortestPathBFS(G, source, target);
+        std::list<leda::edge> path = bfs::shortestPath(G, source, target);
         double elapsed_secs_leda = double(clock() - begin) / CLOCKS_PER_MS;
 
+        #ifdef INFO
+        std::cout << "Shortest path (bdfs): " << std::endl;
+        for (std::list<leda::edge>::iterator it = path.begin(); it != path.end(); ++it) {
+            G.print_edge(*it);
+            std::cout << std::endl;
+        }   
+        #endif
+
         begin = clock();
-        std::list<leda::edge> mpath = bdBFS(G, source, target);
+        std::list<leda::edge> mpath = bdbfs::shortestPath(G, source, target);
         double elapsed_secs_rafa = double(clock() - begin) / CLOCKS_PER_MS;
+
+        #ifdef INFO
+        std::cout << "Shortest path (bdfs): " << std::endl;
+        for (std::list<leda::edge>::iterator it = path.begin(); it != path.end(); ++it) {
+            G.print_edge(*it);
+            std::cout << std::endl;
+        }   
+        #endif
+    
 
         std::list<leda::edge>::iterator it1 = path.begin();
         std::list<leda::edge>::iterator it2 = mpath.begin();
