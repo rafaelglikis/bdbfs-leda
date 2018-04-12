@@ -90,8 +90,7 @@ namespace bdbfs
         std::deque<leda::node> tmpQ(sourceQ);
         sourceQ.clear();
         while (!tmpQ.empty()) {
-            v = tmpQ.back(); 
-            tmpQ.pop_back();
+            v = tmpQ.back(); tmpQ.pop_back();
             forall_out_edges(e,v) { 
                 if(!sourceDiscoveredNodes[G.target(e)]) {
                     #ifdef INFO
@@ -116,7 +115,6 @@ namespace bdbfs
     {
         leda::node t;
         leda::edge e;
-        
         std::deque<leda::node> tmpQ(targetQ);
         targetQ.clear();
         while (!tmpQ.empty()) {

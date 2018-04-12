@@ -249,43 +249,17 @@ namespace test
             std::cout << "[-] Test failed: " << std::endl;
             std::cout << "    expected size: " << path.size() << std::endl; 
             std::cout << "    actual size: " << mpath.size() << std::endl; 
+
+            #ifdef INFO
+            leda::edge e;
+            forall_edges(e,G) {
+                G.print_edge(e); 
+                std::cout<<endl;
+            }
+            #endif
+
             return false;
         }
-
-        /*
-        // some paths are equivalent
-        while( it1 != path.end() && it2 != mpath.end()) {
-            if(*it1 != *it2) {
-                std::cout << "[-] Test failed: " << std::endl;
-                std::cout << "    expected: "; 
-                G.print_edge(*it1);
-                std::cout << std::endl;
-                std::cout << "    actual: "; 
-                G.print_edge(*it2);
-                std::cout << std::endl;
-                return false;
-            }
-
-            it1++;
-            it2++;    
-        }
-        */
-
-        #ifdef DEBUG
-        leda::edge e;
-        forall_edges(e,G) {           //iterate over all edges e of G
-            leda::node source=G.source(e);  //compute source of e
-            leda::node target=G.target(e);  //compute target of e
-
-            std::cout << "edge "; 
-            G.print_edge(e);          //print edge
-            std::cout << " has source ";  
-            G.print_node(source);     //print source
-            std::cout << " and target ";
-            G.print_node(target);     //print target
-            std::cout << std::endl;
-        }
-        #endif
 
         std::cout << "[+] Test OK! (" << info << " ";
         G.print_node(source);
