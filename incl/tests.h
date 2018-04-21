@@ -1,9 +1,9 @@
 #ifndef TESTS_H
 #define TESTS_H
 
-#include "../incl/bfs.h"
-#include "../incl/bdbfs.h"
-#include "../incl/graph_helper.h"
+#include "bfs.h"
+#include "bdbfs.h"
+#include "graph_helper.h"
 #include <vector>
 #include <utility>
 
@@ -11,13 +11,21 @@
 
 namespace test 
 {
-    bool testTinyGraph();
-    bool testTinyGraph2();
-    bool testTinyOddGraph();
-    bool testNonCoherentGraph();
-    bool testRandomGraphs();
-    bool testGridGraphs();
-    bool test(leda::graph&, leda::node&, leda::node&, std::string);
+    // Tests
+    void test(leda::graph&, leda::node&, leda::node&, std::string);
+    void testTinyGraph();
+    void testTinyGraph2();
+    void testTinyOddGraph();
+    void testNonCoherentGraph();
+    void testRandomGraphs();
+    void testGridGraphs();
+
+    // benchmarks
+    void benchmark(leda::graph&, leda::node&, leda::node&, std::string);
+    void benchmarkRandomGraphs();
+    void benchmarkGridGraphs();
 }
+
+#define RUN_TIMES 20
 
 #endif

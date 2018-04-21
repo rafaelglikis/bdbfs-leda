@@ -1,5 +1,8 @@
-#include "../incl/graph_helper.h"
+#include "graph_helper.h"
 
+/**
+ * Creates a grid graph with x rows and y columns
+*/
 leda::graph gridGraphCreator(int x, int y)
 {
     leda::graph G;

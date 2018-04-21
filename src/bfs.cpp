@@ -1,7 +1,10 @@
-#include "../incl/bfs.h"
+#include "bfs.h"
 
 namespace bfs
 {
+    /**
+     * Finds the shortest path by running leda's BFS implementation
+    */
     std::list<leda::edge> shortestPath(leda::graph &G, leda::node &source, leda::node &target) 
     {
         // Running BFS
@@ -15,22 +18,27 @@ namespace bfs
 
         std::list<leda::edge> path; // Contains every edge of shortest path from source to target
 
+        // if target not descovered return empty path
         if (pred[target]==nil) {
+            #ifdef INFO
             std::cout << "[i] Graph not strongly coherent." << std::endl;
+            #endif
             return path;
         }
         
+        // Find the shortest path from pred (O(number_of_edges))
         leda::node checkpoint = target;
         while (checkpoint != source) {
-            if (pred[checkpoint]!=nil) {   
-                path.push_front(pred[checkpoint]);
-                checkpoint = G.source(pred[checkpoint]);
-            }
+            path.push_front(pred[checkpoint]);
+            checkpoint = G.source(pred[checkpoint]);
         }
         
         return path;
     }
 
+    /**
+     * Prints the result of the algorithm.
+    */
     void printInfo(leda::graph& G, leda::node_array<int>& dist, leda::node_array<leda::edge>& pred,  leda::node &source, leda::node &target)
     {
         std::cout << "-----------------------------------------" << std::endl;

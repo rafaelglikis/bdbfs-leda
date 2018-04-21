@@ -1,9 +1,10 @@
 #include <iostream>
-#include "incl/tests.h"
+#include "tests.h"
 
 int main(int argc, char** argv)
 {
-    if (argc < 2) {
+    // print usage
+    if (argc != 2) {
         std::cout << "Usage: " << std::endl;
         std::cout << "\t" << argv[0] << " test (run all tests)" << std::endl; 
         std::cout << "\t" << argv[0] << " benchmark (run all benchmarks)" << std::endl; 
@@ -11,7 +12,16 @@ int main(int argc, char** argv)
     
     std::string command = argv[1];
 
-    if (!command.compare("test")){
+    // Run small tests only
+    if (!command.compare("test-small")){
+        test::testNonCoherentGraph();
+        test::testTinyGraph();
+        test::testTinyGraph2();
+        test::testTinyOddGraph();
+    }
+
+    // Run all tests
+    if (!command.compare("test-all")){
         test::testNonCoherentGraph();
         test::testTinyGraph();
         test::testTinyGraph2();
@@ -20,8 +30,10 @@ int main(int argc, char** argv)
         test::testGridGraphs();
     }
 
+    // Run benchmarks
     if (!command.compare("benchmark")){
-        
+        test::benchmarkRandomGraphs();
+        test::benchmarkGridGraphs();
     }
 
     return 0;

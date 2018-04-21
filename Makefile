@@ -1,8 +1,15 @@
+CC=g++
 LEDAID='/usr/local/LEDA'
 LEDAINCL='/usr/local/LEDA/incl'
+CFLAGS= -I$(LEDAINCL) -L$(LEDAID) -O3 -lleda -std=c++0x -I'incl'
+TARGET=bin/bdbfs
+
 
 all:
-	g++ main.cpp src/bfs.cpp src/bdbfs.cpp src/tests.cpp src/graph_helper.cpp -o run -I$(LEDAINCL) -L$(LEDAID) -O3 -lleda -std=c++0x
+	$(CC) main.cpp src/*.cpp -o $(TARGET) $(CFLAGS) 
 	
 info:
-	g++ main.cpp src/bfs.cpp src/bdbfs.cpp src/tests.cpp src/graph_helper.cpp-o run -I$(LEDAINCL) -L$(LEDAID) -O3 -lleda -std=c++0x -D INFO=1
+	$(CC) main.cpp src/*.cpp -o $(TARGET) $(CFLAGS) -D INFO=1
+
+clean:
+	rm bin/bdbfs
