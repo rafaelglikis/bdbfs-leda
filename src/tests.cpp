@@ -162,36 +162,6 @@ namespace test
         }
     }
 
-    #include <fstream>
-
-    leda::graph gridGraphCreator(int x, int y)
-    {
-        leda::graph G;
-        leda::grid_graph(G, x);
-        
-        for(int j=0; j<y/x-1; ++j){
-            leda::graph g1;
-            leda::grid_graph(g1, x);
-
-            leda::node u = G.last_node();
-            leda::node v = g1.first_node();
-
-            for(int i=0; i<(x-1); ++i) {
-                u = G.pred_node(u);
-            }
-
-            G.join(g1);
-
-            for(int i=0; i<x; ++i){
-                G.new_edge(u,v);
-                u = G.succ_node(u);
-                v = G.succ_node(v);
-            }
-
-        }
-
-        return G;
-    }
     bool testGridGraphs()
     {
         
@@ -210,15 +180,14 @@ namespace test
             leda::node target = G.last_node();
             test(G, source, target, infostream.str());
         }
-
-        
     }
 
     bool test(leda::graph& G, leda::node& source, leda::node& target, std::string info)
     {
+        std::list<leda::edge> path;
         clock_t begin = clock();
-        std::list<leda::edge> path = bfs::shortestPath(G, source, target);
-        double elapsed_secs_leda = double(clock() - begin) / CLOCKS_PER_MS;
+        path = bfs::shortestPath(G, source, target);
+        double elapsed_secs_leda = double(clock() - begin) / CLOCKS_PER_SEC;
 
         #ifdef INFO
         std::cout << "Shortest path (bdfs): " << std::endl;
@@ -228,9 +197,10 @@ namespace test
         }   
         #endif
 
+        std::list<leda::edge> mpath;
         begin = clock();
-        std::list<leda::edge> mpath = bdbfs::shortestPath(G, source, target);
-        double elapsed_secs_rafa = double(clock() - begin) / CLOCKS_PER_MS;
+        mpath = bdbfs::shortestPath(G, source, target);
+        double elapsed_secs_rafa = double(clock() - begin) / CLOCKS_PER_SEC;
 
         #ifdef INFO
         std::cout << "Shortest path (bdfs): " << std::endl;
@@ -266,8 +236,8 @@ namespace test
         std::cout << "->";
         G.print_node(target);
         std::cout << ")" << std::endl;
-        std::cout << "    Time elapsed (leda): " << elapsed_secs_leda << " ms" << std::endl;
-        std::cout << "    Time elapsed (rafa): " << elapsed_secs_rafa << " ms" << std::endl;
+        std::cout << "    Time elapsed (leda): " << elapsed_secs_leda << " seconds" << std::endl;
+        std::cout << "    Time elapsed (rafa): " << elapsed_secs_rafa << " seconds" << std::endl;
 
         return true;
     }

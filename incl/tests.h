@@ -3,11 +3,11 @@
 
 #include "../incl/bfs.h"
 #include "../incl/bdbfs.h"
+#include "../incl/graph_helper.h"
 #include <vector>
 #include <utility>
 
 #include <ctime>
-#define CLOCKS_PER_MS (CLOCKS_PER_SEC / 1000)
 
 namespace test 
 {

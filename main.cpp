@@ -16,11 +16,12 @@ int main(int argc, char** argv)
         test::testTinyGraph();
         test::testTinyGraph2();
         test::testTinyOddGraph();
+        test::testRandomGraphs();
+        test::testGridGraphs();
     }
 
     if (!command.compare("benchmark")){
-        test::testRandomGraphs();
-        test::testGridGraphs();
+        
     }
 
     return 0;
