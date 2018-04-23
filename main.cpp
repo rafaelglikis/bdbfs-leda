@@ -6,8 +6,10 @@ int main(int argc, char** argv)
     // print usage
     if (argc != 2) {
         std::cout << "Usage: " << std::endl;
-        std::cout << "\t" << argv[0] << " test (run all tests)" << std::endl; 
+        std::cout << "\t" << argv[0] << " test-small (run small tests)" << std::endl; 
+        std::cout << "\t" << argv[0] << " test-all (run all tests)" << std::endl; 
         std::cout << "\t" << argv[0] << " benchmark (run all benchmarks)" << std::endl; 
+        return -1;
     }
     
     std::string command = argv[1];
